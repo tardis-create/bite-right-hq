@@ -116,8 +116,16 @@ export async function fetchGlobalState(): Promise<GlobalState> {
     const res = await fetch(`${API_BASE}/api/state`)
     if (res.ok) {
       const data = await res.json()
-      // Ensure transactions exists
-      if (!data.finances.transactions) {
+      // Ensure stages exists
+      if (!data.stages || !Array.isArray(data.stages)) {
+        data.stages = defaultStages
+      }
+      // Ensure finances exists
+      if (!data.finances) {
+        data.finances = defaultFinances
+      }
+      // Ensure transactions exists within finances
+      if (!data.finances.transactions || !Array.isArray(data.finances.transactions)) {
         data.finances.transactions = defaultTransactions
       }
       return data

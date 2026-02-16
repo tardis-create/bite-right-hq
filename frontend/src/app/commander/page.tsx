@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { FinanceData, FinanceDataWithDefaults, defaultFinances, defaultTransactions, fetchGlobalState } from '@/lib/api'
+import { CommanderSkeleton } from '@/components/SkeletonLoader'
 
 export default function CommanderPage() {
   const [finances, setFinances] = useState<FinanceDataWithDefaults>({
@@ -21,8 +22,8 @@ export default function CommanderPage() {
     async function loadData() {
       const state = await fetchGlobalState()
       setFinances({
-        ...state.finances,
-        transactions: state.finances.transactions || [],
+        ...(state.finances || defaultFinances),
+        transactions: state.finances?.transactions || defaultTransactions,
         equity: 600000,
         loan: 1100000,
         subsidy: 425000,
@@ -54,11 +55,7 @@ export default function CommanderPage() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-apple-gray">Loading Commander Deck...</div>
-      </div>
-    )
+    return <CommanderSkeleton />
   }
 
   return (

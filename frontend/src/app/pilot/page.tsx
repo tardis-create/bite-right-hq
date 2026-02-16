@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { fetchGlobalState, defaultStages, updateStageProgress, completeStage } from "@/lib/api";
+import { PilotSkeleton } from "@/components/SkeletonLoader";
 
 interface Stage {
   id: number;
@@ -22,8 +23,9 @@ export default function PilotDashboard() {
   useEffect(() => {
     fetchGlobalState()
       .then((data) => {
-        setStages(data.stages || defaultStages);
-        const unlocked = data.stages?.find((s: Stage) => s.unlocked && !s.completed);
+        const stagesData = data.stages || defaultStages;
+        setStages(stagesData);
+        const unlocked = stagesData.find((s: Stage) => s.unlocked && !s.completed);
         if (unlocked) setCurrentStage(unlocked.id);
       })
       .catch((error) => {
@@ -75,11 +77,7 @@ export default function PilotDashboard() {
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-apple-bg">
-        <div className="animate-spin w-8 h-8 border-4 border-apple-blue border-t-transparent rounded-full"></div>
-      </div>
-    );
+    return <PilotSkeleton />;
   }
 
   return (
