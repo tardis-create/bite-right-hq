@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { FinanceData, FinanceDataWithDefaults, defaultFinances, fetchGlobalState } from '@/lib/api'
+import { FinanceData, FinanceDataWithDefaults, defaultFinances, defaultTransactions, fetchGlobalState } from '@/lib/api'
 
 export default function CommanderPage() {
   const [finances, setFinances] = useState<FinanceDataWithDefaults>({
-    ...defaultFinances as FinanceDataWithDefaults,
+    ...defaultFinances,
     equity: 600000,
     loan: 1100000,
     subsidy: 425000,
     monthlyExpenses: 85000,
     revenue: 120000,
+    transactions: defaultTransactions,
   })
   const [loading, setLoading] = useState(true)
   const [emiAmount, setEmiAmount] = useState(0)
@@ -21,6 +22,7 @@ export default function CommanderPage() {
       const state = await fetchGlobalState()
       setFinances({
         ...state.finances,
+        transactions: state.finances.transactions || [],
         equity: 600000,
         loan: 1100000,
         subsidy: 425000,

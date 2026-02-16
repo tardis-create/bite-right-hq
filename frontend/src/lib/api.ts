@@ -15,12 +15,6 @@ export interface Checklist {
   completed: boolean
 }
 
-export interface FinanceData {
-  totalIncome: number
-  totalExpenses: number
-  profit: number
-}
-
 export interface Transaction {
   id: string
   date: string
@@ -29,12 +23,20 @@ export interface Transaction {
   type: 'income' | 'expense'
 }
 
+export interface FinanceData {
+  totalIncome: number
+  totalExpenses: number
+  profit: number
+  transactions?: Transaction[]
+}
+
 export interface FinanceDataWithDefaults extends FinanceData {
   equity: number
   loan: number
   subsidy: number
   monthlyExpenses: number
   revenue: number
+  transactions: Transaction[]
 }
 
 export interface GlobalState {
@@ -95,10 +97,18 @@ export const defaultStages: Stage[] = [
   },
 ]
 
+export const defaultTransactions: Transaction[] = [
+  { id: '1', date: '2024-01-15', description: 'Initial equity investment', amount: 600000, type: 'income' },
+  { id: '2', date: '2024-01-20', description: 'Bank loan disbursement', amount: 1100000, type: 'income' },
+  { id: '3', date: '2024-02-01', description: 'Equipment purchase - Dental Chair', amount: 250000, type: 'expense' },
+  { id: '4', date: '2024-02-05', description: 'Clinic interior setup', amount: 150000, type: 'expense' },
+]
+
 export const defaultFinances: FinanceData = {
   totalIncome: 0,
   totalExpenses: 0,
   profit: 0,
+  transactions: defaultTransactions,
 }
 
 export async function fetchGlobalState(): Promise<GlobalState> {
@@ -106,6 +116,10 @@ export async function fetchGlobalState(): Promise<GlobalState> {
     const res = await fetch(`${API_BASE}/api/state`)
     if (res.ok) {
       const data = await res.json()
+      // Ensure transactions exists
+      if (!data.finances.transactions) {
+        data.finances.transactions = defaultTransactions
+      }
       return data
     }
   } catch (e) {

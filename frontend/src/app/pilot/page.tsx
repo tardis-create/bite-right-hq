@@ -64,6 +64,16 @@ export default function PilotDashboard() {
     return prevStage?.completed || prevStage?.unlocked;
   };
 
+  const getStageColorClass = (stageId: number, type: 'bg' | 'text' | 'border' | 'bgOpacity') => {
+    const colorMap: Record<number, Record<string, string>> = {
+      1: { bg: 'bg-stage1', text: 'text-stage1', border: 'border-stage1', bgOpacity: 'bg-stage1/10' },
+      2: { bg: 'bg-stage2', text: 'text-stage2', border: 'border-stage2', bgOpacity: 'bg-stage2/10' },
+      3: { bg: 'bg-stage3', text: 'text-stage3', border: 'border-stage3', bgOpacity: 'bg-stage3/10' },
+      4: { bg: 'bg-blue-600', text: 'text-blue-600', border: 'border-blue-600', bgOpacity: 'bg-blue-600/10' },
+    }
+    return colorMap[stageId]?.[type] || colorMap[1][type]
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-apple-bg">
@@ -71,8 +81,6 @@ export default function PilotDashboard() {
       </div>
     );
   }
-
-  const colors = ["stage1", "stage2", "stage3", "stage4"] as const;
 
   return (
     <div className="min-h-screen bg-apple-bg">
@@ -97,7 +105,7 @@ export default function PilotDashboard() {
               disabled={!isStageAccessible(stage.id)}
               className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-all ${
                 currentStage === stage.id
-                  ? `bg-${colors[stage.id - 1]} text-white`
+                  ? `${getStageColorClass(stage.id, 'bg')} text-white`
                   : isStageAccessible(stage.id)
                   ? "bg-white text-gray-700 border border-gray-200"
                   : "bg-gray-100 text-gray-400 cursor-not-allowed"
@@ -124,9 +132,9 @@ export default function PilotDashboard() {
                     <h2 className="text-2xl font-bold">Stage {stage.id}: {stage.name}</h2>
                     <p className="text-apple-gray mt-1">{stage.description}</p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium bg-${colors[stage.id - 1]}/10 text-${colors[stage.id - 1]}`}>
-                    {stage.completed ? "Completed" : stage.unlocked ? "In Progress" : "Locked"}
-                  </span>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStageColorClass(stage.id, 'bgOpacity')} ${getStageColorClass(stage.id, 'text')}`}>
+                  {stage.completed ? "Completed" : stage.unlocked ? "In Progress" : "Locked"}
+                </span>
                 </div>
 
                 {/* Checklist */}
